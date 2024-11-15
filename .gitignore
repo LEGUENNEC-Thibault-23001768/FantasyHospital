@@ -11,7 +11,10 @@ target/
 *.iws
 *.iml
 *.ipr
-
+.mvn/*
+.mvn/wrapper/*
+logs*
+logs/*
 ### Eclipse ###
 .apt_generated
 .classpath
