@@ -37,7 +37,6 @@ public class Main extends GameApplication {
 
     @Override
     protected void initGame() {
-        // Display the hospital map but only enable interactions when resumed
         createMap();
         if (gameResumed) {
             initClickableArea();
@@ -45,25 +44,21 @@ public class Main extends GameApplication {
     }
 
     private void createMap() {
-        // Create a background to represent the map
         Rectangle map = new Rectangle(800, 600, Color.LIGHTGRAY);
         FXGL.getGameScene().addUINode(map);
     }
 
     private void initClickableArea() {
-        // Create a clickable area to represent a location for medical services
         Rectangle serviceArea = new Rectangle(100, 100, Color.DARKGREEN);
         serviceArea.setTranslateX(350);
         serviceArea.setTranslateY(250);
         FXGL.getGameScene().addUINode(serviceArea);
 
-        // Add click event to the service area
         Input input = FXGL.getInput();
         input.addAction(new UserAction("Create Medical Service") {
             @Override
             protected void onActionBegin() {
                 if (gameResumed && FXGL.getGameScene().getUINodes().contains(serviceArea)) {
-                    // Display message indicating a service has been created
                     Text message = new Text("Service Médical Créé!");
                     message.setTranslateX(350);
                     message.setTranslateY(400);
