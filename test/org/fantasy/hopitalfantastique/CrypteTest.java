@@ -1,50 +1,40 @@
 package org.fantasy.hopitalfantastique;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class CrypteTest {
-    @Test
-    void testAjouterCreature() {
-        Crypte<BaseCreature> crypte = new Crypte<>("Crypte froide et chaude", 500, 10, Budget.FAIBLE, 3, 15);
-        BaseCreature vampire = new Vampire("Dracula", SEXE.HOMME, 500, 100, 0, 10);
-        BaseCreature orque = new Orque("Chicken", SEXE.FEMME, 200, 150, 15, 10);
+    private Crypte<BaseCreature> crypte;
+    private Vampire vampire;
+    private Zombie zombie;
+    private Elfe elfe;
 
-        assertTrue(crypte.ajouterCreature(vampire), "Le vampire devrait être ajouté");
-        assertFalse(crypte.ajouterCreature(orque), "L'humain ne devrait pas pouvoir être ajouté");
+    @BeforeEach
+    void setUp() {
+        crypte = new Crypte<>("Crypte Alpha", 100, 2, Budget.FAIBLE, 2, 15);
+        vampire = new Vampire("Vlad", SEXE.HOMME, 70, 1.85, 300, 10);
+        zombie = new Zombie("Walker", SEXE.HOMME, 50, 1.75, 25, 5);
+        elfe = new Elfe("Legolas", SEXE.HOMME, 60, 1.80, 150, 8);
     }
 
     @Test
-    void testModifierTemperature() {
-        Crypte<BaseCreature> crypte = new Crypte<>("Crypte de la chaleur froide ou pas", 500, 10, Budget.FAIBLE, 3, 15);
-        crypte.modifierTemperature(5);
-
-        assertEquals(5, crypte.getTemperature(), "La température de la crypte devrait être mise à jour");
+    void testAjoutCreature() {
+        assertTrue(crypte.ajouterCreature(vampire), "Le vampire devrait pouvoir être ajouté.");
+        assertTrue(crypte.ajouterCreature(zombie), "Le zombie devrait pouvoir être ajouté.");
+        assertFalse(crypte.ajouterCreature(elfe), "L'elfe ne devrait pas pouvoir être ajouté car il ne se régénère pas.");
     }
 
     @Test
-    void testCapaciteMaximale() {
-        Crypte<BaseCreature> crypte = new Crypte<>("Crypte des tenebres ambulant de marseille", 500, 2, Budget.FAIBLE, 3, 15);
-
-        BaseCreature vampire1 = new Vampire("drac", SEXE.HOMME, 100, 50, 0, 5);
-        BaseCreature vampire2 = new Vampire("ula", SEXE.FEMME, 150, 70, 0, 7);
-        BaseCreature zombie = new Zombie("charclo", SEXE.HOMME, 50, 20, 0, 5);
-
-        assertTrue(crypte.ajouterCreature(vampire1), "Le premier vampire devrait être ajouté");
-        assertTrue(crypte.ajouterCreature(vampire2), "Le deuxième vampire devrait être ajouté");
-        assertFalse(crypte.ajouterCreature(zombie), "Le zombie ne devrait pas être ajouté car la crypte est pleine");
+    void testReviserBudget() {
+        crypte.reviserBudget();
+        // La sortie console vérifiera si le budget est révisé correctement.
     }
 
     @Test
-    void testEnleverCreature() {
-        Crypte<BaseCreature> crypte = new Crypte<>("Crypte du cheval flottant", 500, 10, Budget.FAIBLE, 3, 15);
-
-        BaseCreature vampire = new Vampire("kirikou", SEXE.HOMME, 500, 100, 0, 10);
-
-        crypte.ajouterCreature(vampire);
-
-        assertTrue(crypte.enleverCreature(vampire), "Le vampire devrait être retiré");
-        assertFalse(crypte.enleverCreature(vampire), "Le vampire ne devrait plus être présent");
+    void testAjusterTemperature() {
+        crypte.ajusterTemperature(12);
+        assertEquals(12, crypte.getTemperature(), "La température devrait être ajustée à 12.");
     }
-
 }

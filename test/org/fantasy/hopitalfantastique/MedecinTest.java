@@ -1,45 +1,46 @@
 package org.fantasy.hopitalfantastique;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import static org.junit.jupiter.api.Assertions.*;
 
 class MedecinTest {
+    private Medecin<BaseCreature> medecin;
+    private ServiceMedical<BaseCreature> service1;
+    private ServiceMedical<BaseCreature> service2;
+    private Vampire vampire;
+
+    @BeforeEach
+    void setUp() {
+        medecin = new Medecin<>("Dr. Strange", SEXE.HOMME, 45);
+        service1 = new Crypte<>("Crypte Alpha", 100, 2, Budget.FAIBLE, 2, 15);
+        service2 = new CentreQuarantaine<>("Quarantaine Beta", 150, 10, Budget.INSUFFISANT, false);
+        vampire = new Vampire("Vlad", SEXE.HOMME, 70, 1.85, 300, 10);
+    }
 
     @Test
     void testExaminerService() {
-        Crypte<BaseCreature> crypte = new Crypte<>("Crypte froide et chaude", 500, 10, Budget.FAIBLE, 3, 15);
-        Medecin<BaseCreature> marcus = new Medecin<>("le médécin", SEXE.HOMME, 19);
-
-        crypte.ajouterCreature(new Vampire("polo", SEXE.HOMME, 500, 100, 0, 10));
-        crypte.ajouterCreature(new Vampire("salut", SEXE.HOMME, 50, 20, 0, 5));
-
-        marcus.examinerService(crypte);
+        service1.ajouterCreature(vampire);
+        medecin.examinerService(service1);
+        // Vérifiez la sortie console pour confirmer l'examen.
     }
 
     @Test
     void testSoignerService() {
-        Medecin<BaseCreature> medecin = new Medecin<>("Frank", SEXE.HOMME, 45);
-        ServiceMedical<BaseCreature> crypte = new Crypte<>("crpto", 500, 10, Budget.FAIBLE, 3, 15);
-
-        Zombie zomba = new Zombie("droc", SEXE.HOMME, 500, 50, 0, 10);
-        Zombie zombie = new Zombie("gpludidé", SEXE.HOMME, 50, 20, 0, 8);
-
-        crypte.ajouterCreature(zomba);
-        crypte.ajouterCreature(zombie);
-
-        medecin.soignerService(crypte);
-
-        for (BaseCreature creature : crypte.getCreatures()) {
-            System.out.println("Créature : " + creature.getNom() + ", Moral après soin : " + creature.getMoral());
-        }
-
-        assertEquals(10, zomba.getMoral(), "Le moral de zomba devrait être à 10 après les soins");
-        assertEquals(10, zombie.getMoral(), "Le moral de zombie devrait être à 10 après les soins");
+        vampire.tomberMalade("FOMO");
+        service1.ajouterCreature(vampire);
+        medecin.soignerService(service1);
+        assertTrue(vampire.getMaladies().isEmpty(), "Le vampire devrait être guéri après les soins.");
     }
 
+    @Test
+    void testTransfererCreature() {
+        vampire.tomberMalade("FOMO"); // Ajout d'une maladie pour rendre le vampire contagieux
+        assertTrue(service1.ajouterCreature(vampire), "Le vampire devrait être ajouté au service 1.");
+        medecin.transfererCreature(vampire, service1, service2);
+        assertTrue(service2.getCreatures().contains(vampire), "Le vampire devrait être dans le service 2 après le transfert.");
+        assertFalse(service1.getCreatures().contains(vampire), "Le vampire ne devrait plus être dans le service 1 après le transfert.");
+    }
 
 }

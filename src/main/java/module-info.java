@@ -5,6 +5,6 @@ module org.fantasy.hopitalfantastique {
     requires org.controlsfx.controls;
     requires com.almasb.fxgl.all;
 
-    opens org.fantasy.hopitalfantastique to javafx.fxml;
+    opens org.fantasy.hopitalfantastique to com.almasb.fxgl.core;
     exports org.fantasy.hopitalfantastique;
 }
