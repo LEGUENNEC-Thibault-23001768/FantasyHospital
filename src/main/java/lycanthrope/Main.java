@@ -1,6 +1,5 @@
 package lycanthrope;
 
-
 public class Main {
     public static void main(String[] args) {
         Colonie colonie = new Colonie();
@@ -22,5 +21,7 @@ public class Main {
         lycan1.hurler("je domine");
 
         colonie.simuler();
+
+        
     }
 }
