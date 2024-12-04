@@ -4,6 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Package org.fantasy.hopitalfantastique.
+ * Ce package contient des classes et interfaces représentant les créatures fantastiques
+ * et leurs comportements dans un hôpital fantastique.
+ */
+
+/**
+ * Interface BaseComportement.
+ * Définit les comportements de base pour toutes les créatures.
+ */
+
 interface BaseComportement {
     void attendre();
     void hurler();
@@ -12,19 +23,35 @@ interface BaseComportement {
     void soigner();
     void trépasser();
 }
+
+/**
+ * Interface ComportementDemoralisation.
+ * Ajoute la capacité de démoraliser d'autres créatures.
+ */
 interface ComportementDemoralisation extends BaseComportement {
     void démoraliser(); // Affecte le moral des autres créatures
 }
 
+/**
+ * Interface ComportementContamination.
+ * Ajoute la capacité de transmettre des maladies.
+ */
 interface ComportementContamination extends BaseComportement {
     void contaminer(); // Transmet une maladie à une autre créature
 }
 
+/**
+ * Interface ComportementRegeneration.
+ * Ajoute la capacité de régénérer après trépas.
+ */
 interface ComportementRegeneration extends BaseComportement {
     void régénérer(); // Restaure l'état après trépas
 }
 
-
+/**
+ * Enumération CREATURES.
+ * Définit les différents types de créatures disponibles.
+ */
 enum CREATURES {
     BASE,
     ELFES,
@@ -36,12 +63,20 @@ enum CREATURES {
     LYCANTHROPES,
     REPTILIEN
 }
+
+/**
+ * Enumération SEXE.
+ * Définit les sexes possibles des créatures.
+ */
 enum SEXE {
     HOMME,
     FEMME,
 }
 
-
+/**
+ * Classe abstraite BaseCreature.
+ * Représente une créature générique avec des attributs et des comportements de base.
+ */
 abstract class BaseCreature implements BaseComportement {
     protected String nom;
     protected SEXE sexe;
@@ -62,6 +97,16 @@ abstract class BaseCreature implements BaseComportement {
 
     protected ServiceMedical<?> serviceMedical;
 
+    /**
+     * Constructeur de BaseCreature.
+     *
+     * @param nom    Nom de la créature
+     * @param sexe   Sexe de la créature
+     * @param poids  Poids de la créature
+     * @param taille Taille de la créature
+     * @param age    Âge de la créature
+     * @param moral  Moral initial
+     */
     public BaseCreature(String nom, SEXE sexe, double poids, double taille, int age, int moral) {
         this.nom = nom;
         this.sexe = sexe;
@@ -72,18 +117,36 @@ abstract class BaseCreature implements BaseComportement {
         this.maladies = new ArrayList<>();
     }
 
+    /**
+     * Définit le service médical.
+     *
+     * @param service Service médical à assigner
+     */
     public void setServiceMedical(ServiceMedical<?> service) {
         this.serviceMedical = service;
     }
 
+    /**
+     * Récupère le nom de la créature.
+     *
+     * @return Nom de la créature
+     */
     public String getNom() {
         return nom;
     }
 
+    /**
+     * Récupère le moral de la créature.
+     *
+     * @return Niveau de moral
+     */
     public int getMoral() {
         return moral;
     }
 
+    /**
+     * Affiche l'état actuel de la créature (moral et maladies).
+     */
     public void afficherEtat() {
         System.out.println("État de " + nom + " :");
         System.out.println("  Moral : " + moral);
@@ -139,6 +202,10 @@ abstract class BaseCreature implements BaseComportement {
 
 // =================================== LES AUTRES CREATURES ===================================
 
+/**
+ * Classe Elfe.
+ * Représente une créature de type Elfe capable de démoraliser les autres.
+ */
 class Elfe extends BaseCreature implements ComportementDemoralisation {
     public Elfe(String nom, SEXE sexe, double poids, double taille, int age, int moral) {
         super(nom, sexe, poids, taille, age, moral);
@@ -154,7 +221,10 @@ class Elfe extends BaseCreature implements ComportementDemoralisation {
         }
     }
 }
-
+/**
+ * Classe Nain.
+ * Représente une créature de type Nain avec un moral qui baisse rapidement lorsqu'il attend.
+ */
 class Nain extends BaseCreature {
     public Nain(String nom, SEXE sexe, double poids, double taille, int age, int moral) {
         super(nom, sexe, poids, taille, age, moral);
@@ -167,7 +237,10 @@ class Nain extends BaseCreature {
     }
 }
 
-
+/**
+ * Classe Orque.
+ * Représente une créature de type Orque pouvant contaminer d'autres créatures.
+ */
 class Orque extends BaseCreature implements ComportementContamination {
     public Orque(String nom, SEXE sexe, double poids, double taille, int age, int moral) {
         super(nom, sexe, poids, taille, age, moral);
@@ -205,7 +278,10 @@ class Orque extends BaseCreature implements ComportementContamination {
 }
 
 
-
+/**
+ * Classe HommeBete.
+ * Représente une créature de type Homme-Bête capable de contaminer d'autres créatures.
+ */
 class HommeBete extends BaseCreature implements ComportementContamination {
     public HommeBete(String nom, SEXE sexe, double poids, double taille, int age, int moral) {
         super(nom, sexe, poids, taille, age, moral);
@@ -227,7 +303,10 @@ class HommeBete extends BaseCreature implements ComportementContamination {
     }
 }
 
-
+/**
+ * Classe Zombie.
+ * Représente une créature de type Zombie capable de se régénérer et de contaminer.
+ */
 class Zombie extends BaseCreature implements ComportementRegeneration, ComportementContamination {
     public Zombie(String nom, SEXE sexe, double poids, double taille, int age, int moral) {
         super(nom, sexe, poids, taille, age, moral);
@@ -267,7 +346,11 @@ class Zombie extends BaseCreature implements ComportementRegeneration, Comportem
 }
 
 
-
+/**
+ * Classe Vampire.
+ * Représente une créature de type Vampire avec des capacités de contamination,
+ * démoralisation et régénération.
+ */
 class Vampire extends BaseCreature implements ComportementContamination, ComportementDemoralisation, ComportementRegeneration {
     public Vampire(String nom, SEXE sexe, double poids, double taille, int age, int moral) {
         super(nom, sexe, poids, taille, age, moral);
@@ -305,7 +388,10 @@ class Vampire extends BaseCreature implements ComportementContamination, Comport
     }
 }
 
-
+/**
+ * Classe Lycanthrope.
+ * Représente une créature de type Lycanthrope capable de contaminer.
+ */
 class Lycanthrope extends BaseCreature implements ComportementContamination {
     public Lycanthrope(String nom, SEXE sexe, double poids, double taille, int age, int moral) {
         super(nom, sexe, poids, taille, age, moral);
@@ -327,7 +413,10 @@ class Lycanthrope extends BaseCreature implements ComportementContamination {
     }
 }
 
-
+/**
+ * Classe Reptilien.
+ * Représente une créature de type Reptilien avec un moral qui baisse rapidement lorsqu'il attend.
+ */
 class Reptilien extends BaseCreature {
     public Reptilien(String nom, SEXE sexe, double poids, double taille, int age, int moral) {
         super(nom, sexe, poids, taille, age, moral);

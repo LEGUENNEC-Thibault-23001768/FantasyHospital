@@ -1,3 +1,6 @@
+/**
+ * Module principal pour la simulation de l'hôpital fantastique.
+ */
 module org.fantasy.hopitalfantastique {
     requires javafx.controls;
     requires javafx.fxml;

@@ -21,12 +21,22 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 enum EntityType {
     SERVICE_MEDICAL, CREATURE
 }
-
+/**
+ * Classe HospitalEntityFactory.
+ * Cette classe implémente l'interface EntityFactory de FXGL et fournit les méthodes pour
+ * créer différentes entités utilisées dans un hôpital fantastique, comme des services médicaux et des créatures.
+ */
 public class HospitalEntityFactory implements EntityFactory {
 
     private static final String[] NAMES = {"Alaric", "Bryn", "Caelan", "Daria", "SEBAA", "Mickael", "Martin", "Tenders", "Hotwings", "Chicken", "Eryndor", "Faylen", "Gareth", "Halia"};
     private final Random random = new Random();
 
+    /**
+     * Crée une entité représentant un service médical générique.
+     *
+     * @param data Données de création de l'entité
+     * @return Une entité représentant un service médical
+     */
     @Spawns("serviceMedical")
     public Entity createServiceMedical(SpawnData data) {
         var service = FXGL.entityBuilder(data)
@@ -48,7 +58,12 @@ public class HospitalEntityFactory implements EntityFactory {
         setupServicePopup(service, "Service Médical");
         return service;
     }
-
+    /**
+     * Crée une entité représentant une crypte.
+     *
+     * @param data Données de création de l'entité
+     * @return Une entité représentant une crypte
+     */
     @Spawns("crypte")
     public Entity createCrypte(SpawnData data) {
         var service = FXGL.entityBuilder(data)
@@ -72,6 +87,12 @@ public class HospitalEntityFactory implements EntityFactory {
         return service;
     }
 
+    /**
+     * Crée une entité représentant un centre de quarantaine.
+     *
+     * @param data Données de création de l'entité
+     * @return Une entité représentant un centre de quarantaine
+     */
     @Spawns("quarantaine")
     public Entity createQuarantaine(SpawnData data) {
         var service = FXGL.entityBuilder(data)
@@ -101,7 +122,12 @@ public class HospitalEntityFactory implements EntityFactory {
         capacityText.setTranslateY(service.getY() - 20);
     }
 
-
+    /**
+     * Crée une entité de type Elfe.
+     *
+     * @param data Données pour le spawn
+     * @return Une entité représentant un Elfe
+     */
     @Spawns("elfe")
     public Entity createElfe(SpawnData data) {
         return createCreature(data, Color.BLUE, "Elfe");
@@ -131,7 +157,14 @@ public class HospitalEntityFactory implements EntityFactory {
         var capacityText = (javafx.scene.text.Text) service.getObject("capacityText");
         capacityText.setText(service.getInt("current") + "/" + service.getInt("capacity"));
     }
-
+    /**
+     * Crée une entité représentant une créature spécifique.
+     *
+     * @param data  Données de création de l'entité
+     * @param color Couleur de la représentation graphique
+     * @param type  Type de la créature (par exemple, "Elfe", "Orque")
+     * @return Une entité représentant une créature
+     */
     private Entity createCreature(SpawnData data, Color color, String type) {
         String name = NAMES[random.nextInt(NAMES.length)];
         SEXE sexe = random.nextBoolean() ? SEXE.HOMME : SEXE.FEMME;
@@ -204,7 +237,12 @@ public class HospitalEntityFactory implements EntityFactory {
 
         return creature;
     }
-
+    /**
+     * Configure les interactions pour un service.
+     *
+     * @param entity      Entité représentant un service
+     * @param serviceType Type de service (par exemple, "Crypte")
+     */
     private void setupServicePopup(Entity entity, String serviceType) {
         entity.getViewComponent().addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
@@ -213,6 +251,11 @@ public class HospitalEntityFactory implements EntityFactory {
         });
     }
 
+    /**
+     * Affiche un popup avec les informations d'une créature.
+     *
+     * @param creature Entité représentant une créature
+     */
     private void showPopupForCreature(Entity creature) {
         var popup = new VBox();
         popup.setStyle("-fx-background-color: lightgray; -fx-padding: 10; -fx-border-color: black;");
@@ -257,6 +300,12 @@ public class HospitalEntityFactory implements EntityFactory {
     }
 
 
+    /**
+     * Affiche un popup avec les informations d'un service.
+     *
+     * @param service     Entité représentant un service
+     * @param serviceType Type de service
+     */
     private void showPopupForService(Entity service, String serviceType) {
         var popup = new VBox();
         popup.setStyle("-fx-background-color: lightgray; -fx-padding: 10; -fx-border-color: black;");

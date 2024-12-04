@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"org.fantasy.hopitalfantastique","l":"org.fantasy.hopitalfantastique"}];updateSearchResults();
