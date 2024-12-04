@@ -3,22 +3,17 @@ package lycanthrope;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Classe représentant une meute de lycanthropes.
- */
 public class Meute {
     private String nom;
     private Lycanthrope maleAlpha;
     private Lycanthrope femelleAlpha;
     private List<Lycanthrope> membres;
 
-    // Constructeur
     public Meute(String nom) {
         this.nom = nom;
         this.membres = new ArrayList<>();
     }
 
-    // Méthodes
     public String getNom() {
         return nom;
     }
@@ -49,6 +44,8 @@ public class Meute {
         for (Lycanthrope membre : membres) {
             if (!membre.equals(auteur)) {
                 membre.hurler(typeHurlement);
+
+                
             }
         }
     }
