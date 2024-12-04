@@ -2,18 +2,21 @@ package org.fantasy.hopitalfantastique;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.DraggableComponent;
+import com.almasb.fxgl.dsl.components.view.TextViewComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Random;
 
-import static com.almasb.fxgl.dsl.FXGL.getNotificationService;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 enum EntityType {
     SERVICE_MEDICAL, CREATURE
@@ -21,41 +24,83 @@ enum EntityType {
 
 public class HospitalEntityFactory implements EntityFactory {
 
+    private static final String[] NAMES = {"Alaric", "Bryn", "Caelan", "Daria", "SEBAA", "Mickael", "Martin", "Tenders", "Hotwings", "Chicken", "Eryndor", "Faylen", "Gareth", "Halia"};
+    private final Random random = new Random();
+
     @Spawns("serviceMedical")
     public Entity createServiceMedical(SpawnData data) {
-        return createService(data, Color.LIGHTBLUE, "Service Médical", 10);
+        var service = FXGL.entityBuilder(data)
+                .type(EntityType.SERVICE_MEDICAL)
+                .view(new Rectangle(120, 120, Color.LIGHTBLUE))
+                .with(new DraggableComponent())
+                .with("capacity", 10)
+                .with("current", 0)
+                .build();
+
+        var textView = new TextViewComponent(10, -20, "");
+        textView.setY(-20);
+        service.addComponent(textView);
+
+        FXGL.run(() -> {
+            service.getComponent(TextViewComponent.class).getText().setText(service.getInt("current") + "/" + service.getInt("capacity"));
+        }, Duration.seconds(0.1));
+
+        setupServicePopup(service, "Service Médical");
+        return service;
     }
 
     @Spawns("crypte")
     public Entity createCrypte(SpawnData data) {
-        return createService(data, Color.DARKRED, "Crypte", 5);
+        var service = FXGL.entityBuilder(data)
+                .type(EntityType.SERVICE_MEDICAL)
+                .view(new Rectangle(120, 120, Color.DARKRED))
+                .with(new DraggableComponent())
+                .with("capacity", 5)
+                .with("current", 0)
+                .build();
+
+        var capacityText = FXGL.getUIFactoryService().newText(
+                service.getInt("current") + "/" + service.getInt("capacity"),
+                Color.BLACK, 14
+        );
+        capacityText.setTranslateX(service.getX() + 40);
+        capacityText.setTranslateY(service.getY() - 20);
+        FXGL.addUINode(capacityText);
+
+        service.setProperty("capacityText", capacityText);
+        setupServicePopup(service, "Crypte");
+        return service;
     }
 
     @Spawns("quarantaine")
     public Entity createQuarantaine(SpawnData data) {
-        return createService(data, Color.DARKGREEN, "Centre Quarantaine", 15);
-    }
-
-    private Entity createService(SpawnData data, Color color, String type, int capacity) {
         var service = FXGL.entityBuilder(data)
                 .type(EntityType.SERVICE_MEDICAL)
-                .view(new Rectangle(120, 120, color))
+                .view(new Rectangle(120, 120, Color.DARKGREEN))
                 .with(new DraggableComponent())
+                .with("capacity", 8)
+                .with("current", 0)
                 .build();
 
-        service.setProperty("type", type);
-        service.setProperty("capacity", capacity);
+        var capacityText = FXGL.getUIFactoryService().newText(
+                service.getInt("current") + "/" + service.getInt("capacity"),
+                Color.BLACK, 14
+        );
+        capacityText.setTranslateX(service.getX() + 40);
+        capacityText.setTranslateY(service.getY() - 20);
+        FXGL.addUINode(capacityText);
 
-        service.getViewComponent().addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Centre Médical");
-            alert.setHeaderText(type);
-            alert.setContentText("Capacité: " + capacity);
-            alert.show();
-        });
+        service.setProperty("capacityText", capacityText);
 
+        setupServicePopup(service, "Quarantaine");
         return service;
     }
+    private void updateServiceTextPosition(Entity service) {
+        var capacityText = (javafx.scene.text.Text) service.getObject("capacityText");
+        capacityText.setTranslateX(service.getX() + 40);
+        capacityText.setTranslateY(service.getY() - 20);
+    }
+
 
     @Spawns("elfe")
     public Entity createElfe(SpawnData data) {
@@ -82,32 +127,151 @@ public class HospitalEntityFactory implements EntityFactory {
         return createCreature(data, Color.ORANGE, "Lycanthrope");
     }
 
+    private void updateServiceCapacity(Entity service) {
+        var capacityText = (javafx.scene.text.Text) service.getObject("capacityText");
+        capacityText.setText(service.getInt("current") + "/" + service.getInt("capacity"));
+    }
+
     private Entity createCreature(SpawnData data, Color color, String type) {
+        String name = NAMES[random.nextInt(NAMES.length)];
+        SEXE sexe = random.nextBoolean() ? SEXE.HOMME : SEXE.FEMME;
+        int age = random.nextInt(300) + 1; // 1 à 300 ans
+        double taille = 1.2 + random.nextDouble() * 1.0; // 1.2m à 2.2m
+        double poids = 50 + random.nextDouble() * 100; // 50kg à 150kg
+        int moral = random.nextInt(10) + 1; // 1 à 10
+
         var creature = FXGL.entityBuilder(data)
                 .type(EntityType.CREATURE)
                 .view(new Rectangle(40, 40, color))
                 .with(new DraggableComponent())
+                .with("type", type)
+                .with("name", name)
+                .with("sexe", sexe)
+                .with("age", age)
+                .with("taille", taille)
+                .with("poids", poids)
+                .with("originalColor", color)
+                .with("moral", moral)
+                .with("inService", false)
+                .with("sick", false)
                 .build();
 
-        creature.setProperty("type", type);
-        creature.setProperty("sick", false);
-
         creature.getViewComponent().addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event -> {
-            String status = creature.getBoolean("sick") ? "Malade" : "En bonne santé";
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Informations sur la créature");
-            alert.setHeaderText(type);
-            alert.setContentText("État: " + status + "\nVoulez-vous soigner cette créature ?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK && creature.getBoolean("sick")) {
-                creature.setProperty("sick", false);
-                creature.getViewComponent().clearChildren();
-                creature.getViewComponent().addChild(new Rectangle(40, 40, color));
-                getNotificationService().pushNotification(type + " a été soigné !");
+            if (event.getButton() == MouseButton.SECONDARY) {
+                showPopupForCreature(creature);
             }
         });
 
+        creature.getViewComponent().addEventHandler(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, event -> {
+            if (creature.getBoolean("inService")) {
+                event.consume();
+            }
+        });
+
+        creature.getViewComponent().addEventHandler(javafx.scene.input.MouseEvent.MOUSE_RELEASED, event -> {
+            List<Entity> services = FXGL.getGameWorld().getEntitiesByType(EntityType.SERVICE_MEDICAL);
+
+            for (Entity service : services) {
+                if (service.getBoundingBoxComponent().isCollidingWith(creature.getBoundingBoxComponent())) {
+                    int current = service.getInt("current");
+                    int capacity = service.getInt("capacity");
+
+                    if (current < capacity) {
+                        service.setProperty("current", current + 1);
+                        updateServiceCapacity(service);
+                        creature.setProperty("inService", true);
+                        creature.setPosition(service.getX() + 10, service.getY() + 10);
+                        creature.removeComponent(DraggableComponent.class);
+
+                        FXGL.runOnce(() -> {
+                            creature.setProperty("sick", false);
+                            service.setProperty("current", service.getInt("current") - 1);
+                            updateServiceCapacity(service);
+
+                            creature.getViewComponent().clearChildren();
+                            creature.getViewComponent().addChild(new Rectangle(40, 40, creature.getObject("originalColor")));
+                            getNotificationService().pushNotification(creature.getString("name") + " a été soigné !");
+                        }, Duration.seconds(15));
+
+                        return;
+                    } else {
+                        getNotificationService().pushNotification("Service médical plein !");
+                    }
+                }
+            }
+        });
+
+
         return creature;
+    }
+
+    private void setupServicePopup(Entity entity, String serviceType) {
+        entity.getViewComponent().addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                showPopupForService(entity, serviceType);
+            }
+        });
+    }
+
+    private void showPopupForCreature(Entity creature) {
+        var popup = new VBox();
+        popup.setStyle("-fx-background-color: lightgray; -fx-padding: 10; -fx-border-color: black;");
+        popup.setTranslateX(300);
+        popup.setTranslateY(200);
+
+        var title = getUIFactoryService().newText("Créature : " + creature.getString("type"), Color.BLACK, 16);
+        var details = getUIFactoryService().newText(
+                "Nom: " + creature.getString("name") + "\n" +
+                        "Sexe: " + creature.getObject("sexe") + "\n" +
+                        "Âge: " + creature.getInt("age") + " ans\n" +
+                        "Taille: " + String.format("%.2f", creature.getDouble("taille")) + " m\n" +
+                        "Poids: " + String.format("%.2f", creature.getDouble("poids")) + " kg\n" +
+                        "Moral: " + creature.getInt("moral") + "\n" +
+                        "Malade: " + (creature.getBoolean("sick") ? "Oui" : "Non"),
+                Color.BLACK, 14
+        );
+
+        var healButton = getUIFactoryService().newButton("Soigner");
+        healButton.setOnAction(e -> {
+            if (creature.getBoolean("sick")) {
+                creature.setProperty("sick", false);
+                creature.getViewComponent().clearChildren();
+                creature.getViewComponent().addChild(new Rectangle(40, 40, creature.getObject("originalColor")));
+                getNotificationService().pushNotification(creature.getString("name") + " a été soigné !");
+            } else {
+                getNotificationService().pushNotification(creature.getString("name") + " n'est pas malade !");
+            }
+        });
+
+        var killButton = getUIFactoryService().newButton("Tuer");
+        killButton.setOnAction(e -> {
+            creature.removeFromWorld();
+            getNotificationService().pushNotification(creature.getString("name") + " a été éliminé !");
+            removeUINode(popup);
+        });
+
+        popup.getChildren().addAll(title, details, healButton, killButton);
+        addUINode(popup);
+
+        popup.setOnMouseClicked(e -> removeUINode(popup));
+    }
+
+
+    private void showPopupForService(Entity service, String serviceType) {
+        var popup = new VBox();
+        popup.setStyle("-fx-background-color: lightgray; -fx-padding: 10; -fx-border-color: black;");
+        popup.setTranslateX(300);
+        popup.setTranslateY(200);
+
+        var title = getUIFactoryService().newText("Service : " + serviceType, Color.BLACK, 16);
+        var details = getUIFactoryService().newText(
+                "Capacité : " + service.getInt("current") + "/" + service.getInt("capacity"),
+                Color.BLACK, 14
+        );
+
+        popup.getChildren().addAll(title, details);
+        addUINode(popup);
+
+        popup.setOnMouseClicked(e -> removeUINode(popup)); // Click on the popup to close it
     }
 }
