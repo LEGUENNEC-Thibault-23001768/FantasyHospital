@@ -1,8 +1,5 @@
 package lycanthrope;
 
-/**
- * Classe représentant un lycanthrope.
- */
 public class Lycanthrope {
     private String sexe;
     private String categorieAge;
@@ -14,7 +11,6 @@ public class Lycanthrope {
     private boolean isResponding = false;
     private Meute meute;
 
-    // Constructeur
     public Lycanthrope(String sexe, String categorieAge, int force, int facteurDomination, String rang, int facteurImpetuosite, Meute meute) {
         this.sexe = sexe;
         this.categorieAge = categorieAge;
@@ -27,7 +23,6 @@ public class Lycanthrope {
         calculerNiveau();
     }
 
-    // Méthodes
     public void afficherCaracteristiques() {
         System.out.println("Sexe : " + sexe);
         System.out.println("Catégorie d'âge : " + categorieAge);
@@ -41,7 +36,7 @@ public class Lycanthrope {
 
     public void hurler(String typeHurlement) {
         if (isResponding) {
-            return; // Empêche un lycanthrope de répondre plusieurs fois au même hurlement
+            return; 
         }
         isResponding = true;
         System.out.println("Hurlement : " + typeHurlement);
@@ -73,7 +68,6 @@ public class Lycanthrope {
     }
 
     private void calculerNiveau() {
-        // Exemple de calcul
         niveau = force + facteurDomination * 0.5 + (rang.equals("α") ? 10 : 0);
     }
 }
